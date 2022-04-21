@@ -10,10 +10,8 @@ image:
   repository: gouermazi/lab1
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  restaurantSvc:
-    tag: restaurant-service.2022-04-05_20-07-53
   kitchenSvc:
-    tag: kitchen-service.2022-04-05_20-36-25
+    tag: kitchen-service.2022-04-21_20-41-01
 
 imagePullSecrets: []
 nameOverride: ""
@@ -55,13 +53,6 @@ service:
 resources:
   #TODO done define proper hardware resource manifest for the 2 services. Your implementation should contain
   #TODO done 'requests' and 'limits' for both CPU and memory. Design them so that your app can run smoothly.
-  restuaurantSvc:
-      requests:
-        memory: "1024Mi"
-        cpu: "500m"
-      limits:
-        memory: "4096Mi"
-        cpu: "750m"
   kitchenSvc:
       requests:
         memory: "1024Mi"
