@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}-restaurantsvcapp
+  labels:
+    app: restaurantsvc
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: restaurantsvc
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+      #TODO done define proper label/labels for pod template.
+        app: restaurantsvc
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "restaurant-svc.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: restaurantsvcapp
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          #TODO done implement image path by repo and tag, from Values.yaml
+          image: {{ .Values.image.repository}}:{{ .Values.image.restaurantSvc.tag}}
+
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          #TODO implement proper port, readiness and liveness probes here.
+          #TODO please provide a reasonable initialDelaySeconds here. You can try firstly remove it and see
+          #TODO what will happen per you app.
+          ports:
+            - name: rsvc-port
+              protocol: TCP
+              containerPort: 8763
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: rsvc-port
+            periodSeconds: 10
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: rsvc-port
+            periodSeconds: 10
+            initialDelaySeconds: 20
+          resources:
+          #TODO done define proper hardware resources here. Leverage resources definition
+          #TODO done in Values.yaml
+            requests:
+              memory: {{ .Values.resources.restuaurantSvc.requests.memory }}
+              cpu: {{ .Values.resources.restuaurantSvc.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.restuaurantSvc.limits.memory }}
+              cpu: {{ .Values.resources.restuaurantSvc.limits.cpu }}

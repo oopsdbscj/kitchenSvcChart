@@ -1,0 +1,84 @@
+# Default values for restaurant-svc.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+#TODO done implement docker repo and tags for the 2 services. In our lab, you need to put the 2 service
+#TODO done images to the same repo, and distinguish them using tags.
+image:
+  repository: gouermazi/lab1
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  restaurantSvc:
+    tag: restaurant-service.2022-04-05_20-07-53
+  kitchenSvc:
+    tag: kitchen-service.2022-04-05_20-36-25
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # TODO implement proper service type and port here for the 2 services.
+  restuaurantSvc:
+    port: 8763
+    type: NodePort
+  kitchenSvc:
+    port: 8764
+    type: NodePort
+
+
+
+resources:
+  #TODO done define proper hardware resource manifest for the 2 services. Your implementation should contain
+  #TODO done 'requests' and 'limits' for both CPU and memory. Design them so that your app can run smoothly.
+  restuaurantSvc:
+      requests:
+        memory: "1024Mi"
+        cpu: "500m"
+      limits:
+        memory: "4096Mi"
+        cpu: "750m"
+  kitchenSvc:
+      requests:
+        memory: "1024Mi"
+        cpu: "500m"
+      limits:
+        memory: "4096Mi"
+        cpu: "750m"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

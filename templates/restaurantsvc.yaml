@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-restaurant-svc
+  labels:
+    {{- include "restaurant-svc.labels" . | nindent 4 }}
+spec:
+  #TODO done implement 'port', 'type', 'targetPort' here. Leverage the properties we defined in Values.yaml.
+  type: {{ .Values.service.restuaurantSvc.type }}
+  ports:
+    - port: {{ .Values.service.restuaurantSvc.port }}
+      targetPort: rsvc-port
+      protocol: TCP
+      name: http
+  selector:
+    #TODO done implement proper selector here to bind this service and kitchensvc pods.
+    app: restaurantsvc

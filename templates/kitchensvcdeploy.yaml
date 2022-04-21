@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}-kitchensvcapp
+  labels:
+    app: kitchensvc
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: kitchensvc
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        #TODO done define proper label/labels for pod template.
+        app: kitchensvc
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "restaurant-svc.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: kitchensvcapp
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          #TODO done implement image path by repo and tag, from Values.yaml
+          image: {{ .Values.image.repository}}:{{ .Values.image.kitchenSvc.tag}}
+
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          #TODO done implement proper port, readiness and liveness probes here.
+          #TODO done please provide a reasonable initialDelaySeconds here. You can try firstly remove it and see
+          #TODO done  what will happen per you app.
+            - name: ksvc-port
+              protocol: TCP
+              containerPort: 8764
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: ksvc-port
+            periodSeconds: 10
+            initialDelaySeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: ksvc-port
+            periodSeconds: 10
+            initialDelaySeconds: 20
+          resources:
+          #TODO done define proper hardware resources here. Leverage resources definition
+          # in Values.yaml
+            requests:
+              memory: {{ .Values.resources.kitchenSvc.requests.memory }}
+              cpu: {{ .Values.resources.kitchenSvc.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.kitchenSvc.limits.memory }}
+              cpu: {{ .Values.resources.kitchenSvc.limits.cpu }}
