@@ -41,9 +41,6 @@ securityContext: {}
 
 service:
   # TODO implement proper service type and port here for the 2 services.
-  restuaurantSvc:
-    port: 8763
-    type: NodePort
   kitchenSvc:
     port: 8764
     type: NodePort
